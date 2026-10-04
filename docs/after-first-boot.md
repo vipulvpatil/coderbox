@@ -1,6 +1,10 @@
 # After first boot
 
-Run these once, in the code-server terminal (`` Ctrl+` ``), as `coder`.
+Do these once, right after the server is created.
+
+**Where to type the commands:** open code-server in your browser, then open its
+terminal from the menu: **☰ → Terminal → New Terminal** (shortcut: Ctrl + backtick).
+The terminal already runs as your `coder` user, so type the commands as shown, without `sudo`.
 
 ## 1. Check the setup finished
 

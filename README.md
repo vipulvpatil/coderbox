@@ -31,7 +31,7 @@ make sure *MagicDNS* and *HTTPS Certificates* are on.
    [Tailscale machines](https://login.tailscale.com/admin/machines).
 5. **Open** `https://<server-name>.<your-tailnet>.ts.net` in a browser on any of your
    Tailscale devices. The first load can take a minute while the certificate is issued.
-6. **Finish setup** in the code-server terminal: [docs/after-first-boot.md](docs/after-first-boot.md).
+6. **Finish setup** (log in to GitHub and Claude): [docs/after-first-boot.md](docs/after-first-boot.md).
 
 Something wrong? See [docs/after-first-boot.md#troubleshooting](docs/after-first-boot.md#troubleshooting).
 
