@@ -86,8 +86,12 @@ PasswordAuthentication no
 KbdInteractiveAuthentication no
 PermitRootLogin no
 EOF
+# Ubuntu 24.04 starts sshd on demand (ssh.socket). Until the first connection,
+# /run/sshd does not exist and ssh.service is not running: `sshd -t` needs the
+# directory, and a plain `reload` would fail on the inactive service.
+install -d -m 755 /run/sshd
 sshd -t
-systemctl reload ssh
+systemctl try-reload-or-restart ssh
 
 log "Go (latest stable)"
 GO_VERSION="$(curl -fsSL 'https://go.dev/VERSION?m=text' | head -1)"
