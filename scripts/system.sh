@@ -86,8 +86,12 @@ PasswordAuthentication no
 KbdInteractiveAuthentication no
 PermitRootLogin no
 EOF
+# Ubuntu 24.04 starts sshd on demand (ssh.socket). Until the first connection,
+# /run/sshd does not exist and ssh.service is not running: `sshd -t` needs the
+# directory, and a plain `reload` would fail on the inactive service.
+install -d -m 755 /run/sshd
 sshd -t
-systemctl reload ssh
+systemctl try-reload-or-restart ssh
 
 log "Go (latest stable)"
 GO_VERSION="$(curl -fsSL 'https://go.dev/VERSION?m=text' | head -1)"
@@ -105,14 +109,19 @@ fi
 # Only Caddy talks to code-server, so it listens on localhost and needs no
 # password: being on your tailnet is the authentication.
 install -d -m 755 -o "$USERNAME" -g "$USERNAME" "/home/$USERNAME/.config" "/home/$USERNAME/.config/code-server"
-cat > "/home/$USERNAME/.config/code-server/config.yaml" <<'EOF'
-bind-addr: 127.0.0.1:8080
+CS_CONFIG="/home/$USERNAME/.config/code-server/config.yaml"
+CS_WANT='bind-addr: 127.0.0.1:8080
 auth: none
-cert: false
-EOF
-chown "$USERNAME:$USERNAME" "/home/$USERNAME/.config/code-server/config.yaml"
-systemctl enable "code-server@$USERNAME" >/dev/null
-systemctl restart "code-server@$USERNAME"
+cert: false'
+# Restart only when the config changes: a restart kills every code-server
+# terminal, including one that is running this script.
+if [[ "$(cat "$CS_CONFIG" 2>/dev/null)" != "$CS_WANT" ]]; then
+  printf '%s\n' "$CS_WANT" > "$CS_CONFIG"
+  chown "$USERNAME:$USERNAME" "$CS_CONFIG"
+  systemctl enable "code-server@$USERNAME" >/dev/null
+  systemctl restart "code-server@$USERNAME"
+fi
+systemctl enable --now "code-server@$USERNAME" >/dev/null
 
 log "Caddy: HTTPS with a Tailscale certificate"
 if ! grep -qs '^TS_PERMIT_CERT_UID=caddy' /etc/default/tailscaled; then
