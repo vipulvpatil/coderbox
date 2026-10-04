@@ -40,10 +40,14 @@ Something wrong? See [docs/after-first-boot.md#troubleshooting](docs/after-first
 The scripts are safe to re-run. From a terminal on the server:
 
 ```bash
-cd /opt/coderbox && sudo git fetch --tags && sudo git checkout v2   # the tag you want
-sudo ./scripts/system.sh
-./scripts/user.sh
+cd /opt/coderbox && sudo git fetch --depth 1 origin tag v2 && sudo git checkout v2   # the tag you want
+sudo systemd-run --unit=coderbox-setup --collect bash -c \
+  '/opt/coderbox/scripts/system.sh && sudo -iu coder /opt/coderbox/scripts/user.sh'
+journalctl -fu coderbox-setup        # watch it; Ctrl+C stops watching, not the setup
 ```
+
+`systemd-run` runs the setup as its own background job, so it keeps going even if your
+terminal disconnects (setup may briefly restart Tailscale and code-server).
 
 ## What's in this repo
 

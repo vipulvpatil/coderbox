@@ -78,11 +78,13 @@ browser the first time.
 sudo less /var/log/cloud-init-output.log
 ```
 
-**Re-run a step.** Both scripts are safe to re-run:
+**Re-run the setup.** Both scripts are safe to re-run. Run them as a background job so
+they survive your terminal disconnecting (setup may restart Tailscale or code-server):
 
 ```bash
-sudo /opt/coderbox/scripts/system.sh
-/opt/coderbox/scripts/user.sh
+sudo systemd-run --unit=coderbox-setup --collect bash -c \
+  '/opt/coderbox/scripts/system.sh && sudo -iu coder /opt/coderbox/scripts/user.sh'
+journalctl -fu coderbox-setup        # watch it; Ctrl+C stops watching, not the setup
 ```
 
 **The page doesn't load.**
@@ -103,9 +105,9 @@ used. Open the server's **Console** in Hetzner, log in as root, then:
 
 ```bash
 sudo tailscale up --ssh                  # prints a login link instead of using a key
-sudo /opt/coderbox/scripts/system.sh     # finish the setup
-sudo -iu coder /opt/coderbox/scripts/user.sh
 ```
+
+Then re-run the setup as above.
 
 **Locked out completely.** There are no public ports, so the Hetzner web **Console** is the
 way in. If you don't know the root password, use *Rescue → Reset root password* in Hetzner
