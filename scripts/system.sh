@@ -59,19 +59,9 @@ log "Packages"
 "${APT[@]}" update -q
 "${APT[@]}" install -yq git jq vim build-essential python3 ufw unattended-upgrades gh caddy
 
-log "Tailscale"
-if ! command -v tailscale >/dev/null; then
-  curl -fsSL https://tailscale.com/install.sh | sh
-fi
-if ! tailscale status >/dev/null 2>&1; then
-  [[ -n "$AUTHKEY_FILE" && -s "$AUTHKEY_FILE" ]] \
-    || die "not on a tailnet yet: pass a Tailscale auth key file as the first argument"
-  tailscale up --authkey="$(tr -d '[:space:]' < "$AUTHKEY_FILE")" --ssh
-fi
-[[ -n "$AUTHKEY_FILE" && -f "$AUTHKEY_FILE" ]] && rm -f "$AUTHKEY_FILE"
-TS_HOST="$(tailscale status --json | jq -r '.Self.DNSName' | sed 's/\.$//')"
-[[ -n "$TS_HOST" && "$TS_HOST" != null ]] || die "could not read this machine's Tailscale name"
-
+# Lock the machine down before joining Tailscale, so a failed join (bad or
+# used auth key) leaves it closed rather than open. Setup itself only needs
+# outbound connections. The tailscale0 rule works before the interface exists.
 log "Firewall: Tailscale only, no public ports"
 ufw default deny incoming >/dev/null
 ufw default allow outgoing >/dev/null
@@ -92,6 +82,19 @@ EOF
 install -d -m 755 /run/sshd
 sshd -t
 systemctl try-reload-or-restart ssh
+
+log "Tailscale"
+if ! command -v tailscale >/dev/null; then
+  curl -fsSL https://tailscale.com/install.sh | sh
+fi
+if ! tailscale status >/dev/null 2>&1; then
+  [[ -n "$AUTHKEY_FILE" && -s "$AUTHKEY_FILE" ]] \
+    || die "not on a tailnet yet: pass a Tailscale auth key file as the first argument"
+  tailscale up --authkey="$(tr -d '[:space:]' < "$AUTHKEY_FILE")" --ssh
+fi
+[[ -n "$AUTHKEY_FILE" && -f "$AUTHKEY_FILE" ]] && rm -f "$AUTHKEY_FILE"
+TS_HOST="$(tailscale status --json | jq -r '.Self.DNSName' | sed 's/\.$//')"
+[[ -n "$TS_HOST" && "$TS_HOST" != null ]] || die "could not read this machine's Tailscale name"
 
 log "Go (latest stable)"
 GO_VERSION="$(curl -fsSL 'https://go.dev/VERSION?m=text' | head -1)"
