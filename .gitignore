@@ -1,0 +1,3 @@
+# Your filled-in copy of cloud-init.yaml
+*.local.yaml
+*authkey*
