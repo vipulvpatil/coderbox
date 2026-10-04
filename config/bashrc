@@ -1,0 +1,13 @@
+# Loaded from ~/.bashrc. Managed by coderbox: scripts/user.sh overwrites this file.
+# shellcheck shell=bash disable=SC1091
+
+export PATH="$HOME/.local/bin:/usr/local/go/bin:$HOME/go/bin:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+
+alias gst="git status"
+alias ga="git add"
+alias gcmsg="git commit -m"
+alias gd="git diff"
