@@ -1,0 +1,17 @@
+#cloud-config
+# Paste this into "Cloud config" when creating a Hetzner server.
+# Edit ONE line: replace the auth key below with a fresh one (see README).
+# Do not commit your real key.
+
+write_files:
+  - path: /root/ts-authkey
+    permissions: '0600'
+    content: tskey-auth-PASTE-YOUR-KEY-HERE
+
+packages:
+  - git
+
+runcmd:
+  - git clone --depth 1 --branch v1 https://github.com/vipulvpatil/coderbox /opt/coderbox
+  - /opt/coderbox/scripts/system.sh /root/ts-authkey
+  - sudo -iu coder /opt/coderbox/scripts/user.sh
