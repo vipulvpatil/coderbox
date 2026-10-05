@@ -40,7 +40,7 @@ Something wrong? See [docs/after-first-boot.md#troubleshooting](docs/after-first
 The scripts are safe to re-run. From a terminal on the server:
 
 ```bash
-cd /opt/coderbox && sudo git fetch --depth 1 origin tag v1.2 && sudo git checkout v1.2   # the tag you want
+cd /opt/coderbox && sudo git fetch --depth 1 origin tag v1.3 && sudo git checkout v1.3   # the tag you want
 sudo systemd-run --unit=coderbox-setup --collect bash -c \
   '/opt/coderbox/scripts/system.sh && sudo -iu coder /opt/coderbox/scripts/user.sh'
 journalctl -fu coderbox-setup        # watch it; Ctrl+C stops watching, not the setup
