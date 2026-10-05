@@ -12,6 +12,6 @@ packages:
   - git
 
 runcmd:
-  - git clone --depth 1 --branch v3 https://github.com/vipulvpatil/coderbox /opt/coderbox
+  - git clone --depth 1 --branch v1.2 https://github.com/vipulvpatil/coderbox /opt/coderbox
   - /opt/coderbox/scripts/system.sh /root/ts-authkey
   - sudo -iu coder /opt/coderbox/scripts/user.sh
