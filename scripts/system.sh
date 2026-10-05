@@ -19,6 +19,8 @@ die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 
 [[ $EUID -eq 0 ]] || die "run as root (sudo $0)"
 export DEBIAN_FRONTEND=noninteractive
+# cloud-init runs us without HOME, and the code-server installer needs it.
+export HOME="${HOME:-/root}"
 ARCH="$(dpkg --print-architecture)"   # amd64 or arm64
 # On first boot, Ubuntu's own updates may hold the apt lock; wait instead of failing.
 APT=(apt-get -o DPkg::Lock::Timeout=600)

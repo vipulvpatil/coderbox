@@ -12,6 +12,7 @@ packages:
   - git
 
 runcmd:
-  - git clone --depth 1 --branch v1.2 https://github.com/vipulvpatil/coderbox /opt/coderbox
-  - /opt/coderbox/scripts/system.sh /root/ts-authkey
-  - sudo -iu coder /opt/coderbox/scripts/user.sh
+  - git clone --depth 1 --branch v1.3 https://github.com/vipulvpatil/coderbox /opt/coderbox
+  # One chained command: if system.sh fails, user.sh doesn't run and
+  # `cloud-init status` reports the error instead of "done".
+  - /opt/coderbox/scripts/system.sh /root/ts-authkey && sudo -iu coder /opt/coderbox/scripts/user.sh
